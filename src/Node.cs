@@ -6,18 +6,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Animation;
 
-namespace MazeSolver.src
+namespace MazeSolver
 {
     internal class Node
     {
         List<Node> children;
         bool treasure;
         bool mrCrab;
+        bool isChecked;
         public Node(bool isTreasure, bool isMrCrab)
         {
             children = new List<Node>();
             treasure = isTreasure;
             mrCrab = isMrCrab;
+            isChecked = false;
         }
         public bool Treasure
         {
@@ -39,6 +41,17 @@ namespace MazeSolver.src
             set
             {
                 mrCrab = value;
+            }
+        }
+        public bool IsChecked
+        {
+            get
+            {
+                return isChecked;
+            }
+            set
+            { 
+                isChecked = value;
             }
         }
         public List<Node> Children
