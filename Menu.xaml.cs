@@ -22,9 +22,13 @@ namespace MazeSolver
     /// </summary>
     public partial class MainWindow : Window
     {
+        private Maze maze = new Maze();
+        private bool fileSelected = false;
+
         public MainWindow()
         {
             InitializeComponent();
+
             
         }
 
@@ -33,12 +37,12 @@ namespace MazeSolver
 
         }
 
-        private void RadioButton_Checked(object sender, RoutedEventArgs e)
+        private void DFS(object sender, RoutedEventArgs e)
         {
 
         }
 
-        private void RadioButton_Checked_1(object sender, RoutedEventArgs e)
+        private void BFS(object sender, RoutedEventArgs e)
         {
 
         }
@@ -57,18 +61,21 @@ namespace MazeSolver
             {
                 // get the selected file path
                 string filePath = openFileDialog.FileName;
+                fileSelected = true;
                 FileName.Text = filePath;
-                Maze mainMaze = new Maze();
-                mainMaze.createMap(filePath);
-                int rows = mainMaze.Length;
-                int columns = mainMaze.Width;
-                int recLen = 400 / mainMaze.Length;
-                int recWid = 400 / mainMaze.Width;
-                mainMaze.initGrid(rows, columns);
+                FileNotSelected.Text = "";
+                mapGrid.Children.Clear();
+                maze.createMap(filePath);
+                int rows = maze.Height;
+                int columns = maze.Width;
+                double recWidth = mapGrid.ActualWidth / maze.Width;
+                double recHeight = mapGrid.ActualHeight / maze.Height;
+                maze.initGrid(rows, columns);
 
                 for (int i = 0; i < rows; i++)
                 {
                     RowDefinition rowDef = new RowDefinition();
+                    rowDef.Height = new GridLength(recHeight);
                     mapGrid.RowDefinitions.Add(rowDef);
 
                     for (int j = 0; j < columns; j++)
@@ -76,36 +83,39 @@ namespace MazeSolver
                         if (i == 0)
                         {
                             ColumnDefinition colDef = new ColumnDefinition();
+                            colDef.Width = new GridLength(recWidth);
                             mapGrid.ColumnDefinitions.Add(colDef);
                         }
 
                         Rectangle rect = new Rectangle();
-                        if (mainMaze.Peta[i][j] == "K")
+                        if (maze.Peta[i][j] == "K")
                         {
                             rect.Fill = Brushes.Red;
-                            //mainMaze.setGrid(i, j, false, true);
+                            //maze.setGrid(i, j, false, true);
                         }
-                        else if (mainMaze.Peta[i][j] == "R")
+                        else if (maze.Peta[i][j] == "R")
                         {
                             rect.Fill = Brushes.White;
-                            //mainMaze.setGrid(i, j, false, false);
+                            //maze.setGrid(i, j, false, false);
                         }
-                        else if (mainMaze.Peta[i][j] == "T")
+                        else if (maze.Peta[i][j] == "T")
                         {
                             rect.Fill = Brushes.Gold;
-                            //mainMaze.setGrid(i, j, true, false);
+                            //maze.setGrid(i, j, true, false);
                         }
-                        else if (mainMaze.Peta[i][j] == "X")
+                        else if (maze.Peta[i][j] == "X")
                         {
                             rect.Fill = Brushes.Black;
                         }
                         else
-                        {
-                            rect.Fill = Brushes.Green;
+                        {   
+                            mapGrid.Children.Clear();
+                            throw new Exception("Invalid character / Wrong file format");
                         }
                         rect.Stroke = Brushes.Black;
-                        rect.Width = recWid;
-                        rect.Height = recLen;
+                        rect.Width = recHeight;
+                        rect.Height = recWidth;
+                        rect.Margin = new Thickness(-1, 0, -1, 0);
                         Grid.SetRow(rect, i);
                         Grid.SetColumn(rect, j);
 
@@ -113,6 +123,34 @@ namespace MazeSolver
                     }
                 }
             }
-        }      
+        }
+        private void Visualize_Click(object sender, RoutedEventArgs e)
+        {
+            if (!fileSelected)
+            {
+                FileNotSelected.Text = "Pilih File Dahulu!";
+                FileNotSelected.Foreground = Brushes.Red;
+            }
+            else
+            {
+                if (bfs.IsChecked == true)
+                {
+                    MethodNotSelected.Text = "";
+                    FileName.Text = bfs.Name;
+                    // do bfs
+                }
+                else if (dfs.IsChecked == true)
+                {
+                    MethodNotSelected.Text = "";
+                    FileName.Text = dfs.Name;
+                    // do dfs
+                }
+                else
+                {
+                    MethodNotSelected.Text = "Pilih metode";
+                    MethodNotSelected.Foreground= Brushes.Red;
+                }
+            }
+        }
     }
 }

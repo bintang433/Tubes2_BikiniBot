@@ -11,8 +11,8 @@ namespace MazeSolver
 {
     internal class Maze
     {
-        private int length;
         private int width;
+        private int height;
         private int xAwal;
         private int xAkhir;
         private int yAwal;
@@ -31,15 +31,15 @@ namespace MazeSolver
             this.peta = new List<List<string>>();
 
         }
-        public int Length
-        {
-            get { return length; }
-            set { length = value; }
-        }
         public int Width
-        { 
-            get { return width; } 
+        {
+            get { return width; }
             set { width = value; }
+        }
+        public int Height
+        { 
+            get { return height; } 
+            set { height = value; }
         }
         public int XAwal
         {
@@ -81,6 +81,7 @@ namespace MazeSolver
         public void createMap(String filename)
         {
             String filePath = filename;
+            this.peta.Clear();
             using (StreamReader reader = new StreamReader(filePath))
             {
                 string line = reader.ReadLine(); // Read the first line of the file
@@ -89,21 +90,8 @@ namespace MazeSolver
                 {
                     this.peta.Add(new List<String>(line.Split(' '))); // Add each subsequent line to the list of lists
                 }
-                this.length = peta.Count;
                 this.width = peta[0].Count;
-            }
-        }
-
-        public void printMap()
-        {
-            foreach (List<String> row in peta) 
-            {
-                foreach(String c in row)
-                {
-                    Console.Write(c);
-                    Console.Write(' ');
-                }
-                Console.WriteLine();
+                this.height = peta.Count;
             }
         }
 

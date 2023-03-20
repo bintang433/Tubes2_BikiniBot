@@ -5,14 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MazeSolver"
         mc:Ignorable="d"
-        Title="Menu" Height="450" Width="800">
+        Title="Menu"
+        WindowStyle="None"
+        WindowState="Maximized">
+
     <Grid>
-        <Grid Name="mapGrid" Width="420" Height="420" Canvas.Left="400" Canvas.Top="30" Margin="355,7,25,7"/>
+        <Grid Name="mapGrid" Margin="355,7,25,7"/>
         <Button Name="SelectFile" Content="Button" HorizontalAlignment="Left" Height="18" Margin="23,104,0,0" VerticalAlignment="Top" Width="123" Click="SelectFile_Click"/>
-        <TextBox Name="FileName" HorizontalAlignment="Left" Height="41" Margin="23,40,0,0" TextWrapping="NoWrap" Text="TextBox" VerticalAlignment="Top" Width="290" TextChanged="TextBox_TextChanged" />
-        <RadioButton Content="DFS" HorizontalAlignment="Left" Height="19" Margin="23,162,0,0" VerticalAlignment="Top" Width="73" Checked="RadioButton_Checked"/>
-        <RadioButton Content="BFS" HorizontalAlignment="Left" Height="17" VerticalAlignment="Top" Width="84" Margin="23,205,0,0"/>
-        <Button Content="viusalize" HorizontalAlignment="Left" Margin="70,341,0,0" VerticalAlignment="Top" Height="54" Width="197"/>
+        <TextBox Name="FileName" HorizontalAlignment="Left" Height="23" Margin="24,60,0,0" TextWrapping="NoWrap" Text="TextBox" VerticalAlignment="Top" Width="290" TextChanged="TextBox_TextChanged" />
+        <RadioButton Name="dfs" Content="DFS" HorizontalAlignment="Left" Height="19" Margin="23,162,0,0" VerticalAlignment="Top" Width="73" Checked="DFS"/>
+        <RadioButton Name="bfs" Content="BFS" HorizontalAlignment="Left" Height="17" VerticalAlignment="Top" Width="84" Margin="23,205,0,0" Checked="BFS"/>
+        <Button Name="visualize" Content="viusalize" HorizontalAlignment="Left" Margin="70,341,0,0" VerticalAlignment="Top" Height="54" Width="197" Click="Visualize_Click"/>
         <Slider HorizontalAlignment="Left" Margin="10,250,0,0" VerticalAlignment="Top" Width="291" Height="28"/>
+        <TextBox Name="MethodNotSelected" HorizontalAlignment="Left" Margin="24,227,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" BorderThickness="0"/>
+        <TextBox Name="FileNotSelected" HorizontalAlignment="Left" Margin="24,84,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" BorderThickness="0"/>
     </Grid>
 </Window>
