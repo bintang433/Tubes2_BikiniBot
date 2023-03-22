@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Menu"
         WindowStyle="None"
-        WindowState="Maximized">
+        WindowState="Maximized" d:DesignWidth="868.031">
 
     <Grid>
         <Grid Name="mapGrid" Margin="355,7,25,7"/>

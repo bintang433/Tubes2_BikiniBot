@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
+using System.Runtime.CompilerServices;
 
 namespace MazeSolver
 {
@@ -13,21 +15,21 @@ namespace MazeSolver
     {
         private int width;
         private int height;
-        private int xAwal;
-        private int xAkhir;
-        private int yAwal;
-        private int yAkhir;
+        private Node startNode;
+        private string bfsPath;
+        private string dfsPath;
+        private int treasureCount = 0;
+       
+
+
         private List<List<string>> peta;
         private List<List<Node>> grid;
-        public List<List<int>> angkas;
-        public List<int> angka;
+        private List<List<Rectangle>> rectangles;
 
         public Maze()
         {
-            this.xAwal = 0;
-            this.yAwal = 0;
-            this.xAkhir = 0;
-            this.yAkhir = 0;
+            this.rectangles = new List<List<Rectangle>>();
+            this.grid = new List<List<Node>>();
             this.peta = new List<List<string>>();
 
         }
@@ -41,69 +43,180 @@ namespace MazeSolver
             get { return height; } 
             set { height = value; }
         }
-        public int XAwal
-        {
-            get { return xAwal; }
-            set { xAwal = value; }
-        }
-        public int XAkhir
-        {
-            get { return xAkhir; }
-            set { xAkhir = value; }
-        }
-        public int YAwal
-        {
-            get { return yAwal; }
-            set { yAwal = value; }
-        }
-        public int YAkhir
-        {
-            get { return yAkhir; }
-            set { yAkhir = value; }
-        }
         public List<List<String>> Peta
         { 
             get { return peta; }
         }
-        public void initGrid(int row, int col)
+        public List<List<Rectangle>> Rectangles
+
+        { get { return rectangles; } }
+
+        public string BfsPath
         {
-            grid = new List<List<Node>>(row);
-            for (int i  = 0; i < grid.Count; i++)
-            {
-                grid[i] = new List<Node>(col);
-            }
-        }
-        public void setGrid(int row, int col, bool treasure, bool mrcrab)
-        {
-            grid[row][col] = new Node(treasure, mrcrab);
+            get { return bfsPath; }
         }
 
+        public string DfsPath
+        {
+            get { return dfsPath; }
+        }
+        public int TreasureCount
+        {
+            get { return treasureCount; }
+            set { treasureCount = value; }
+        }
+        public Node StartNode { get { return startNode; } }
         public void createMap(String filename)
         {
             String filePath = filename;
             this.peta.Clear();
             using (StreamReader reader = new StreamReader(filePath))
             {
+                int row = 0;
+                this.grid.Add(new List<Node>());
                 string line = reader.ReadLine(); // Read the first line of the file
                 this.peta.Add(new List<String>(line.Split(' '))); // Add the first line to the list of lists
+                for (int col = 0; col < this.peta[row].Count; col++)
+                {
+                    if (this.peta[row][col] != "X")
+                    {
+                        bool isTreasure = false;
+                        bool isMrCrab = false;
+                        if (this.peta[row][col] == "K")
+                        {
+                            isMrCrab = true;
+                        }
+                        if (this.peta[row][col] == "T")
+                        {
+                            isTreasure = true;
+                            this.TreasureCount++;
+                        }
+                        Node newNode = new Node(isTreasure, isMrCrab, col, row);
+                        if (isMrCrab)
+                        {
+                            this.startNode = newNode;
+                        }
+                        this.grid[row].Add(newNode);
+                    }
+                }
+                row++;
                 while ((line = reader.ReadLine()) != null)
                 {
+                    this.grid.Add(new List<Node>());
                     this.peta.Add(new List<String>(line.Split(' '))); // Add each subsequent line to the list of lists
+                    for (int col = 0; col < this.peta[row].Count; col++)
+                    {
+                        if (this.peta[row][col] != "X")
+                        {
+                            bool isTreasure = false;
+                            bool isMrCrab = false;
+                            if (this.peta[row][col] == "K")
+                            {
+                                isMrCrab = true;
+                            }
+                            if (this.peta[row][col] == "T")
+                            {
+                                isTreasure = true;
+                                this.TreasureCount++;
+                            }
+                            Node newNode = new Node(isTreasure, isMrCrab, col, row);
+                            if (isMrCrab)
+                            {
+                                this.startNode = newNode;
+                            }
+                            this.grid[row].Add(newNode);
+                        }
+                    }
+
+                    row++;
                 }
-                this.width = peta[0].Count;
-                this.height = peta.Count;
+                if (this.Peta.Count > 0)
+                {
+                    this.Width = this.Peta[0].Count;
+                    this.Height = this.Peta.Count;
+                }
             }
         }
 
-        public void solveBFS(int time)
-
+        public void connectNode()
         {
-
+            for (int i = 0; i < this.grid.Count; i++)
+            {
+                for (int j = 0; j < this.grid[i].Count; j++)
+                {
+                    if (j != this.grid[i].Count - 1)
+                    {
+                        if (this.grid[i][j].isNeighbor(this.grid[i][j + 1]))
+                        {
+                            this.grid[i][j].addNeighbor(this.grid[i][j + 1]);
+                        }
+                    }
+                    if (i != (this.grid.Count - 1))
+                    {
+                        for (int k = 0; k < this.grid[i+1].Count; k++)
+                        {
+                            if (this.grid[i][j].isNeighbor(this.grid[i + 1][k]))
+                            {
+                                this.grid[i][j].addNeighbor(this.grid[i + 1][k]);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
-        public void solveDFS(int time)
+        public void BFS()
         {
+            this.bfsPath = "";
+            Queue<Node> queue = new Queue<Node>();
+            HashSet<Node> visited = new HashSet<Node>();
+            HashSet<Node> visitedT = new HashSet<Node>();
+            Queue<string> tempQueue = new Queue<string>();
 
+            queue.Enqueue(this.startNode);
+            visited.Add(this.startNode);
+
+            while (queue.Count > 0 && visitedT.Count < this.TreasureCount)
+            {
+                Node node = queue.Dequeue();
+                visited.Add(node);
+                this.bfsPath += (node.Ordinat.ToString() + node.Absis.ToString() + " ");
+
+                if (node.Treasure && !visitedT.Contains(node))
+                {
+                    visitedT.Add(node);
+                }
+                foreach (Node neighbor in node.Neighbors)
+                {
+                    if (!visited.Contains(neighbor))
+                    {
+                        queue.Enqueue(neighbor);
+                    }
+                }
+
+            }
+        }
+
+        public void DFS(Node node, HashSet<Node> visited, HashSet<Node> visitedT)
+        {
+            if (visitedT.Count == TreasureCount)
+            {
+                return;
+            }
+            visited.Add(node);
+            this.dfsPath += (node.Ordinat.ToString() + node.Absis.ToString() + " ");
+            if (node.Treasure && !visitedT.Contains(node))
+            {
+                visitedT.Add(node);
+            }
+
+            foreach (Node neighbor in node.Neighbors)
+            {
+                if (!visited.Contains(neighbor))
+                {
+                    DFS(neighbor, visited, visitedT);
+                }
+            }
         }
     }
 }

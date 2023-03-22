@@ -5,21 +5,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Animation;
+using System.Xml.Linq;
 
 namespace MazeSolver
 {
-    internal class Node
+    public class Node
     {
-        List<Node> children;
+        List<Node> neighbors;
+        int absis;
+        int ordinat;
         bool treasure;
         bool mrCrab;
-        bool isChecked;
-        public Node(bool isTreasure, bool isMrCrab)
+        public Node(bool isTreasure, bool isMrCrab, int absis, int ordinat)
         {
-            children = new List<Node>();
+            neighbors = new List<Node>();
             treasure = isTreasure;
             mrCrab = isMrCrab;
-            isChecked = false;
+            this.absis = absis;
+            this.ordinat = ordinat;
         }
         public bool Treasure
         {
@@ -43,73 +46,51 @@ namespace MazeSolver
                 mrCrab = value;
             }
         }
-        public bool IsChecked
+        public List<Node> Neighbors
         {
             get
             {
-                return isChecked;
+                return neighbors;
+            }
+        }
+        public int Absis
+        {
+            get
+            {
+                return absis;
+
             }
             set
-            { 
-                isChecked = value;
+            {
+                absis = value;
             }
         }
-        public List<Node> Children
+        public int Ordinat
         {
             get
             {
-                return children;
-            }
-        }
-        public void addChildren(bool isTreasure, bool isMrCrab)
-        {
-            Node child = new Node(isTreasure, isMrCrab);
-            children.Add(child);
-        }
+                return ordinat;
 
-        public bool dfs()
-        {
-            if (Treasure && MrCrab)
-            {
-                return true;
             }
-            else
+            set
             {
-                bool found = false;
-                foreach (Node child in Children)
-                {
-                    found = found || child.dfs();
-                    if (found)
-                        break;
-                }
-                return found;
+                ordinat = value;
+            }
+        }
+        public void addNeighbor(Node newNeighbor)
+        {
+            if (!neighbors.Contains(newNeighbor, new NodeComparer()))
+            {
+                neighbors.Add(newNeighbor);
+                newNeighbor.addNeighbor(this);
             }
         }
 
-        public bool bfs()
+
+
+        public bool isNeighbor(Node node)
         {
-            Queue<Node> childQueue = new Queue<Node>();
-            if (Treasure)
-            {
-                return true;
-            }
-            foreach (Node child in Children)
-            {
-                childQueue.Enqueue(child);
-            }
-            while (childQueue.Count != 0)
-            {
-                Node checkChild = childQueue.Dequeue();
-                if (checkChild.Treasure)
-                {
-                    return true;
-                }
-                foreach (Node grandchild in checkChild.Children)
-                {
-                    childQueue.Enqueue(grandchild);
-                }
-            }
-            return false;
+            return (Math.Abs(this.Absis - node.Absis) == 1 && Math.Abs(this.Ordinat - node.Ordinat) == 0) || (Math.Abs(this.Absis - node.Absis) == 0 && Math.Abs(this.Ordinat - node.Ordinat) == 1);
         }
     }
 }

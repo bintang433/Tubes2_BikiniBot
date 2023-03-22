@@ -22,6 +22,7 @@ namespace MazeSolver
     /// </summary>
     public partial class MainWindow : Window
     {
+        private static int top = 0, left = 0;
         private Maze maze = new Maze();
         private bool fileSelected = false;
 
@@ -64,20 +65,19 @@ namespace MazeSolver
                 fileSelected = true;
                 FileName.Text = filePath;
                 FileNotSelected.Text = "";
+                bool fileCorrect = true;
                 mapGrid.Children.Clear();
                 maze.createMap(filePath);
                 int rows = maze.Height;
                 int columns = maze.Width;
                 double recWidth = mapGrid.ActualWidth / maze.Width;
                 double recHeight = mapGrid.ActualHeight / maze.Height;
-                maze.initGrid(rows, columns);
 
                 for (int i = 0; i < rows; i++)
                 {
                     RowDefinition rowDef = new RowDefinition();
                     rowDef.Height = new GridLength(recHeight);
                     mapGrid.RowDefinitions.Add(rowDef);
-
                     for (int j = 0; j < columns; j++)
                     {
                         if (i == 0)
@@ -86,7 +86,6 @@ namespace MazeSolver
                             colDef.Width = new GridLength(recWidth);
                             mapGrid.ColumnDefinitions.Add(colDef);
                         }
-
                         Rectangle rect = new Rectangle();
                         if (maze.Peta[i][j] == "K")
                         {
@@ -110,7 +109,10 @@ namespace MazeSolver
                         else
                         {   
                             mapGrid.Children.Clear();
-                            throw new Exception("Invalid character / Wrong file format");
+                            FileNotSelected.Text = "Format file salah!";
+                            FileNotSelected.Foreground = Brushes.Red;
+                            break;
+
                         }
                         rect.Stroke = Brushes.Black;
                         rect.Width = recHeight;
@@ -121,7 +123,13 @@ namespace MazeSolver
 
                         mapGrid.Children.Add(rect);
                     }
+                    if (!fileCorrect)
+                    {
+                        break;
+                    }
                 }
+
+                maze.connectNode();
             }
         }
         private void Visualize_Click(object sender, RoutedEventArgs e)
@@ -136,13 +144,18 @@ namespace MazeSolver
                 if (bfs.IsChecked == true)
                 {
                     MethodNotSelected.Text = "";
-                    FileName.Text = bfs.Name;
+                    maze.BFS();
+                    FileName.Text = maze.BfsPath;
                     // do bfs
                 }
                 else if (dfs.IsChecked == true)
                 {
                     MethodNotSelected.Text = "";
-                    FileName.Text = dfs.Name;
+                    HashSet<Node> visited = new HashSet<Node>();
+                    HashSet<Node> visitedT = new HashSet<Node>();
+                    maze.DFS(maze.StartNode, visited, visitedT);
+
+                    FileName.Text = maze.DfsPath;
                     // do dfs
                 }
                 else
