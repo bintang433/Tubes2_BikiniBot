@@ -1,109 +1,103 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Windows.Shapes;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MazeSolver
+﻿class Maze
 {
-    internal class Maze
+    private char[,] grid;
+    private int startX, startY, treasureCount;
+
+    public Maze(string filename)
     {
-        private int width;
-        private int height;
-        private int xAwal;
-        private int xAkhir;
-        private int yAwal;
-        private int yAkhir;
-        private List<List<string>> peta;
-        private List<List<Node>> grid;
-        public List<List<int>> angkas;
-        public List<int> angka;
+        using (StreamReader reader = new StreamReader(filename))
+        {
+            string? line = reader.ReadLine();
 
-        public Maze()
-        {
-            this.xAwal = 0;
-            this.yAwal = 0;
-            this.xAkhir = 0;
-            this.yAkhir = 0;
-            this.peta = new List<List<string>>();
-
-        }
-        public int Width
-        {
-            get { return width; }
-            set { width = value; }
-        }
-        public int Height
-        { 
-            get { return height; } 
-            set { height = value; }
-        }
-        public int XAwal
-        {
-            get { return xAwal; }
-            set { xAwal = value; }
-        }
-        public int XAkhir
-        {
-            get { return xAkhir; }
-            set { xAkhir = value; }
-        }
-        public int YAwal
-        {
-            get { return yAwal; }
-            set { yAwal = value; }
-        }
-        public int YAkhir
-        {
-            get { return yAkhir; }
-            set { yAkhir = value; }
-        }
-        public List<List<String>> Peta
-        { 
-            get { return peta; }
-        }
-        public void initGrid(int row, int col)
-        {
-            grid = new List<List<Node>>(row);
-            for (int i  = 0; i < grid.Count; i++)
+            // Validasi format file
+            if (line == null)
             {
-                grid[i] = new List<Node>(col);
+                throw new FormatException("Invalid file format");
             }
-        }
-        public void setGrid(int row, int col, bool treasure, bool mrcrab)
-        {
-            grid[row][col] = new Node(treasure, mrcrab);
-        }
 
-        public void createMap(String filename)
-        {
-            String filePath = filename;
-            this.peta.Clear();
-            using (StreamReader reader = new StreamReader(filePath))
+            int width = line.Split(' ').Length;
+            int height = 1;
+
+            while (!reader.EndOfStream)
             {
-                string line = reader.ReadLine(); // Read the first line of the file
-                this.peta.Add(new List<String>(line.Split(' '))); // Add the first line to the list of lists
-                while ((line = reader.ReadLine()) != null)
+                line = reader.ReadLine();
+                height++;
+            }
+
+            grid = new char[height, width];
+            treasureCount = 0;
+
+            reader.BaseStream.Seek(0, SeekOrigin.Begin);
+
+            for (int row = 0; row < height; row++)
+            {
+                line = reader.ReadLine();
+
+                // Validasi panjang baris
+                if (line == null || line.Split(' ').Length != width)
                 {
-                    this.peta.Add(new List<String>(line.Split(' '))); // Add each subsequent line to the list of lists
+                    throw new FormatException("Invalid maze row length");
                 }
-                this.width = peta[0].Count;
-                this.height = peta.Count;
+
+                string[] parts = line.Split(' ');
+
+                for (int col = 0; col < width; col++)
+                {
+                    // Validasi nilai array tidak null atau out of range
+                    if (parts[col] == null || parts[col].Length == 0)
+                    {
+                        throw new FormatException("Invalid maze content");
+                    }
+
+                    grid[row, col] = parts[col][0];
+
+                    if (parts[col][0] == 'K')
+                    {
+                        startX = col;
+                        startY = row;
+                    }
+                    else if (parts[col][0] == 'T')
+                    {
+                        treasureCount++;
+                    }
+                }
+            }
+
+            // Validasi ada atau tidaknya Krusty Krab dan harta karun
+            if (startX == -1 || treasureCount == 0)
+            {
+                throw new FormatException("Invalid maze content");
             }
         }
+    }
 
-        public void solveBFS(int time)
-
+    public bool IsAccessible(int x, int y)
+    {
+        if (x < 0 || x >= grid.GetLength(1) || y < 0 || y >= grid.GetLength(0))
         {
-
+            return false;
         }
+        return grid[y, x] != 'X';
+    }
 
-        public void solveDFS(int time)
-        {
+    public bool IsTreasure(int x, int y)
+    {
+        return grid[y, x] == 'T';
+    }
 
-        }
+    public int StartX => startX;
+
+    public int StartY => startY;
+
+    public int TreasureCount => treasureCount; // Return the number of treasures in the maze
+
+    public char GetNode(int row, int col)
+    { // Return the node at the given row and column
+        return grid[row, col];
+    }
+
+    public Node GetKrustyKrab()
+    { // Return the starting node
+        return new Node(startY, startX);
     }
 }

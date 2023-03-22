@@ -1,115 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Animation;
+﻿using System.Collections.Generic;
 
-namespace MazeSolver
+class Node
 {
-    internal class Node
+    public int X { get; set; }
+    public int Y { get; set; }
+    public int Steps { get; set; }
+    public Node Parent { get; set; }
+    public List<Node> Neighbors { get; }
+
+    public bool Visited { get; set; }
+
+    public Node(int x, int y, int steps = 0, Node parent = null!)
     {
-        List<Node> children;
-        bool treasure;
-        bool mrCrab;
-        bool isChecked;
-        public Node(bool isTreasure, bool isMrCrab)
+        X = x;
+        Y = y;
+        Steps = steps;
+        Parent = parent;
+        Neighbors = new List<Node>();
+        Visited = false;
+    }
+
+    public void AddNeighbor(Node neighbor)
+    {
+        if (neighbor == null)
         {
-            children = new List<Node>();
-            treasure = isTreasure;
-            mrCrab = isMrCrab;
-            isChecked = false;
-        }
-        public bool Treasure
-        {
-            get
-            {
-                return treasure;
-            }
-            set
-            {
-                treasure = value;
-            }
-        }
-        public bool MrCrab
-        {
-            get
-            {
-                return mrCrab;
-            }
-            set
-            {
-                mrCrab = value;
-            }
-        }
-        public bool IsChecked
-        {
-            get
-            {
-                return isChecked;
-            }
-            set
-            { 
-                isChecked = value;
-            }
-        }
-        public List<Node> Children
-        {
-            get
-            {
-                return children;
-            }
-        }
-        public void addChildren(bool isTreasure, bool isMrCrab)
-        {
-            Node child = new Node(isTreasure, isMrCrab);
-            children.Add(child);
+            return;
         }
 
-        public bool dfs()
-        {
-            if (Treasure && MrCrab)
-            {
-                return true;
-            }
-            else
-            {
-                bool found = false;
-                foreach (Node child in Children)
-                {
-                    found = found || child.dfs();
-                    if (found)
-                        break;
-                }
-                return found;
-            }
-        }
-
-        public bool bfs()
-        {
-            Queue<Node> childQueue = new Queue<Node>();
-            if (Treasure)
-            {
-                return true;
-            }
-            foreach (Node child in Children)
-            {
-                childQueue.Enqueue(child);
-            }
-            while (childQueue.Count != 0)
-            {
-                Node checkChild = childQueue.Dequeue();
-                if (checkChild.Treasure)
-                {
-                    return true;
-                }
-                foreach (Node grandchild in checkChild.Children)
-                {
-                    childQueue.Enqueue(grandchild);
-                }
-            }
-            return false;
-        }
+        Neighbors.Add(neighbor);
+        neighbor.Neighbors.Add(this);
     }
 }
