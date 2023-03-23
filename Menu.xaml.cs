@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -181,11 +182,15 @@ namespace MazeSolver
                 }
                 else if (dfs.IsChecked == true)
                 {
+                    Stopwatch stopwatch = new Stopwatch();
                     MethodNotSelected.Text = "";
                     maze.DfsPath = "";
                     HashSet<Node> visited = new HashSet<Node>();
                     HashSet<Node> visitedT = new HashSet<Node>();
+                    stopwatch.Start();
                     maze.DFS(maze.StartNode, visited, visitedT, maze.StartNode.Absis, maze.StartNode.Ordinat);
+                    stopwatch.Stop();
+                    maze.DfsRuntime = stopwatch.Elapsed.TotalMilliseconds;
                     visited.Clear();
                     visitedT.Clear();
                     maze.visualizeDFS(maze.StartNode, visited, visitedT, maze.StartNode.Absis, maze.StartNode.Ordinat);

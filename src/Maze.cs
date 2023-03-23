@@ -10,6 +10,7 @@ using System.Threading;
 using System.Runtime.CompilerServices;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.Diagnostics;
 
 namespace MazeSolver
 {
@@ -23,6 +24,8 @@ namespace MazeSolver
         private int treasureCount = 0;
         private bool dfsDone = false;
         private bool bfsDone = false;
+        private double dfsRuntime;
+        private double bfsRuntime;
 
         private readonly ManualResetEventSlim pauseEvent = new ManualResetEventSlim(false);
 
@@ -43,22 +46,22 @@ namespace MazeSolver
             set { width = value; }
         }
         public int Height
-        { 
-            get { return height; } 
+        {
+            get { return height; }
             set { height = value; }
         }
         public List<List<String>> Peta
-        { 
+        {
             get { return peta; }
         }
         public List<List<Rectangle>> Rectangles
-        { 
-            get { return rectangles; } 
+        {
+            get { return rectangles; }
         }
 
         public List<List<Node>> Grid
-        { 
-            get { return grid; } 
+        {
+            get { return grid; }
         }
 
         public string BfsPath
@@ -72,17 +75,17 @@ namespace MazeSolver
             get { return dfsPath; }
             set { dfsPath = value; }
         }
-        
+
         public int TreasureCount
         {
             get { return treasureCount; }
             set { treasureCount = value; }
         }
-        public Node StartNode 
-        { 
+        public Node StartNode
+        {
             get { return startNode; }
         }
-        
+
         public bool DfsDone
         {
             get { return dfsDone; }
@@ -91,6 +94,15 @@ namespace MazeSolver
         public bool BfsDone
         {
             get { return bfsDone; }
+        }
+        public double DfsRuntime
+        {
+            get { return dfsRuntime; }
+            set { dfsRuntime = value; }
+        }
+        public double BfsRuntime
+        { 
+            get { return bfsRuntime;}
         }
         public void createMap(String filename)
         {
@@ -191,11 +203,24 @@ namespace MazeSolver
             }
         }
 
+        public int nodeCount()
+        {
+            int count = 0;
+            foreach(List<Node> nodes in this.grid)
+            {
+                count += nodes.Count;
+            }
+            return count;
+        }
+
         public void BFS()
         {
+            Stopwatch stopwatch = new Stopwatch();
             Queue<Node> queue = new Queue<Node>();
             HashSet<Node> visited = new HashSet<Node>();
             HashSet<Node> visitedT = new HashSet<Node>();
+
+            stopwatch.Start();
 
             queue.Enqueue(this.startNode);
             visited.Add(this.startNode);
@@ -219,6 +244,9 @@ namespace MazeSolver
                     }
                 }
             }
+
+            stopwatch.Stop();
+            this.bfsRuntime = stopwatch.Elapsed.TotalMilliseconds;
         }
 
         public async void visualizeBFS()
@@ -255,6 +283,7 @@ namespace MazeSolver
 
         public void DFS(Node node, HashSet<Node> visited, HashSet<Node> visitedT, int x, int y)
         {
+
             if (visitedT.Count == TreasureCount)
             {
                 return;
