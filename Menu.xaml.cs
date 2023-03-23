@@ -13,6 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
 using Rectangle = System.Windows.Shapes.Rectangle;
 
 namespace MazeSolver
@@ -66,63 +68,80 @@ namespace MazeSolver
                 FileName.Text = filePath;
                 FileNotSelected.Text = "";
                 bool fileCorrect = true;
-                mapGrid.Children.Clear();
                 maze.createMap(filePath);
                 int rows = maze.Height;
                 int columns = maze.Width;
-                double recWidth = mapGrid.ActualWidth / maze.Width;
-                double recHeight = mapGrid.ActualHeight / maze.Height;
-
+                double width = map.ActualWidth / columns;
+                double height = map.ActualHeight / rows;
+                double top = 0;
                 for (int i = 0; i < rows; i++)
                 {
-                    RowDefinition rowDef = new RowDefinition();
-                    rowDef.Height = new GridLength(recHeight);
-                    mapGrid.RowDefinitions.Add(rowDef);
+                    maze.Rectangles.Add(new List<Rectangle>());
+                    double left = 0;
                     for (int j = 0; j < columns; j++)
                     {
-                        if (i == 0)
-                        {
-                            ColumnDefinition colDef = new ColumnDefinition();
-                            colDef.Width = new GridLength(recWidth);
-                            mapGrid.ColumnDefinitions.Add(colDef);
-                        }
                         Rectangle rect = new Rectangle();
-                        if (maze.Peta[i][j] == "K")
-                        {
-                            rect.Fill = Brushes.Red;
-                            //maze.setGrid(i, j, false, true);
-                        }
-                        else if (maze.Peta[i][j] == "R")
-                        {
-                            rect.Fill = Brushes.White;
+                        
+                        rect.Fill = Brushes.White;
                             //maze.setGrid(i, j, false, false);
-                        }
-                        else if (maze.Peta[i][j] == "T")
-                        {
-                            rect.Fill = Brushes.Gold;
-                            //maze.setGrid(i, j, true, false);
-                        }
-                        else if (maze.Peta[i][j] == "X")
+                        if (maze.Peta[i][j] == "X")
                         {
                             rect.Fill = Brushes.Black;
                         }
-                        else
+                        else if (maze.Peta[i][j] != "X" && maze.Peta[i][j] == "R" && maze.Peta[i][j] == "T" && maze.Peta[i][j] == "K")
                         {   
-                            mapGrid.Children.Clear();
                             FileNotSelected.Text = "Format file salah!";
                             FileNotSelected.Foreground = Brushes.Red;
                             break;
 
                         }
+                        if (maze.Peta[i][j] == "K")
+                        {
+                            TextBox text = new TextBox();
+                            text.Text = "Krusty Krab";
+                            text.Foreground = Brushes.Red;
+                            text.HorizontalAlignment = HorizontalAlignment.Center;
+                            text.VerticalAlignment = VerticalAlignment.Center;
+                            text.TextAlignment = TextAlignment.Center;
+                            text.VerticalContentAlignment = VerticalAlignment.Center;
+                            text.Width = width;
+                            text.Height = height;
+                            text.FontSize = width/11+10;
+                            text.Background = Brushes.Transparent;
+                            Panel.SetZIndex(text, 1);
+                            map.Children.Add(text);
+                            Canvas.SetTop(text, top);
+                            Canvas.SetLeft(text, left);
+                        }
+                        if (maze.Peta[i][j] == "T")
+                        {
+                            TextBox text = new TextBox();
+                            text.Text = "Treasure";
+                            text.Foreground = Brushes.DarkGoldenrod;
+                            text.HorizontalAlignment = HorizontalAlignment.Center;
+                            text.VerticalAlignment = VerticalAlignment.Center;
+                            text.TextAlignment = TextAlignment.Center;
+                            text.VerticalContentAlignment = VerticalAlignment.Center;
+                            text.Width = width;
+                            text.Height = height;
+                            text.FontSize = width/8+10;
+                            text.Background = Brushes.Transparent;
+                            Panel.SetZIndex(text, 1);
+                            map.Children.Add(text);
+                            Canvas.SetTop(text, top);
+                            Canvas.SetLeft(text, left);
+                        }
                         rect.Stroke = Brushes.Black;
-                        rect.Width = recHeight;
-                        rect.Height = recWidth;
-                        rect.Margin = new Thickness(-1, 0, -1, 0);
-                        Grid.SetRow(rect, i);
-                        Grid.SetColumn(rect, j);
-
-                        mapGrid.Children.Add(rect);
+                        rect.Width = width;
+                        rect.Height = height;
+                        Panel.SetZIndex(rect, 0);
+                        map.Children.Add(rect);
+                        Canvas.SetTop(rect, top);
+                        Canvas.SetLeft(rect, left);
+                        left += width;
+                        maze.Rectangles[i].Add(rect);
                     }
+                    top += height;
                     if (!fileCorrect)
                     {
                         break;
@@ -153,8 +172,7 @@ namespace MazeSolver
                     MethodNotSelected.Text = "";
                     HashSet<Node> visited = new HashSet<Node>();
                     HashSet<Node> visitedT = new HashSet<Node>();
-                    maze.DFS(maze.StartNode, visited, visitedT);
-
+                    maze.DFS(maze.StartNode, visited, visitedT, maze.StartNode.Absis, maze.StartNode.Ordinat);
                     FileName.Text = maze.DfsPath;
                     // do dfs
                 }

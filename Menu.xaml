@@ -7,17 +7,20 @@
         mc:Ignorable="d"
         Title="Menu"
         WindowStyle="None"
-        WindowState="Maximized" d:DesignWidth="868.031">
+        WindowState="Maximized"
+        d:DesignWidth="868.031">
 
     <Grid>
-        <Grid Name="mapGrid" Margin="355,7,25,7"/>
-        <Button Name="SelectFile" Content="Button" HorizontalAlignment="Left" Height="18" Margin="23,104,0,0" VerticalAlignment="Top" Width="123" Click="SelectFile_Click"/>
-        <TextBox Name="FileName" HorizontalAlignment="Left" Height="23" Margin="24,60,0,0" TextWrapping="NoWrap" Text="TextBox" VerticalAlignment="Top" Width="290" TextChanged="TextBox_TextChanged" />
-        <RadioButton Name="dfs" Content="DFS" HorizontalAlignment="Left" Height="19" Margin="23,162,0,0" VerticalAlignment="Top" Width="73" Checked="DFS"/>
-        <RadioButton Name="bfs" Content="BFS" HorizontalAlignment="Left" Height="17" VerticalAlignment="Top" Width="84" Margin="23,205,0,0" Checked="BFS"/>
-        <Button Name="visualize" Content="viusalize" HorizontalAlignment="Left" Margin="70,341,0,0" VerticalAlignment="Top" Height="54" Width="197" Click="Visualize_Click"/>
-        <Slider HorizontalAlignment="Left" Margin="10,250,0,0" VerticalAlignment="Top" Width="291" Height="28"/>
+        <Button Name="SelectFile" Content="Open File" HorizontalAlignment="Left" Height="22" Margin="24,126,0,0" VerticalAlignment="Top" Width="123" Click="SelectFile_Click"/>
+        <TextBox Name="FileName" HorizontalAlignment="Left" Height="23" Margin="24,69,0,0" TextWrapping="NoWrap" Text="Masukkan file .." VerticalAlignment="Top" Width="290" TextChanged="TextBox_TextChanged" />
+        <RadioButton Name="dfs" Content="DFS" HorizontalAlignment="Left" Height="19" Margin="24,171,0,0" VerticalAlignment="Top" Width="73" Checked="DFS"/>
+        <RadioButton Name="bfs" Content="BFS" HorizontalAlignment="Left" Height="17" VerticalAlignment="Top" Width="84" Margin="24,205,0,0" Checked="BFS"/>
+        <Button Name="visualize" Content="viusalize" HorizontalAlignment="Left" Margin="130,309,0,0" VerticalAlignment="Top" Height="54" Width="197" Click="Visualize_Click" FontSize="25"/>
+        <Slider HorizontalAlignment="Left" Margin="24,259,0,0" VerticalAlignment="Top" Width="410" Height="28"/>
         <TextBox Name="MethodNotSelected" HorizontalAlignment="Left" Margin="24,227,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" BorderThickness="0"/>
-        <TextBox Name="FileNotSelected" HorizontalAlignment="Left" Margin="24,84,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" BorderThickness="0"/>
+        <TextBox Name="FileNotSelected" HorizontalAlignment="Left" Margin="24,97,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" BorderThickness="0"/>
+        <Rectangle HorizontalAlignment="Stretch" Height="NaN" Margin="470,0,0,0" Stroke="LightBlue" VerticalAlignment="Stretch" Width="NaN" Fill="LightCyan"/>
+        <TextBox HorizontalAlignment="Left" Height="46" Margin="24,10,0,0" TextWrapping="Wrap" Text="Maze Solver" VerticalAlignment="Top" Width="410" FontSize="35" TextAlignment="Center" BorderThickness="0"/>
+        <Canvas Name ="map" Margin="470,0,0,0" Height="NaN" Width="Nan" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
     </Grid>
 </Window>

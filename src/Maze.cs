@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Runtime.CompilerServices;
+using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace MazeSolver
 {
@@ -16,11 +18,11 @@ namespace MazeSolver
         private int width;
         private int height;
         private Node startNode;
-        private string bfsPath;
-        private string dfsPath;
+        private string bfsPath = "";
+        private string dfsPath = "";
         private int treasureCount = 0;
-       
 
+        private readonly ManualResetEventSlim pauseEvent = new ManualResetEventSlim(false);
 
         private List<List<string>> peta;
         private List<List<Node>> grid;
@@ -59,7 +61,9 @@ namespace MazeSolver
         public string DfsPath
         {
             get { return dfsPath; }
+            set { dfsPath = value; }
         }
+        
         public int TreasureCount
         {
             get { return treasureCount; }
@@ -165,22 +169,22 @@ namespace MazeSolver
             }
         }
 
-        public void BFS()
+        public async void BFS()
         {
-            this.bfsPath = "";
             Queue<Node> queue = new Queue<Node>();
             HashSet<Node> visited = new HashSet<Node>();
             HashSet<Node> visitedT = new HashSet<Node>();
-            Queue<string> tempQueue = new Queue<string>();
 
             queue.Enqueue(this.startNode);
             visited.Add(this.startNode);
-
             while (queue.Count > 0 && visitedT.Count < this.TreasureCount)
             {
                 Node node = queue.Dequeue();
                 visited.Add(node);
-                this.bfsPath += (node.Ordinat.ToString() + node.Absis.ToString() + " ");
+                this.rectangles[node.Ordinat][node.Absis].Fill = Brushes.Blue;
+                if (this.bfsPath.Length > 0)
+                this.bfsPath += " - ";
+                this.bfsPath += ("(" + node.Ordinat.ToString() + "," + node.Absis.ToString() + ")");
 
                 if (node.Treasure && !visitedT.Contains(node))
                 {
@@ -193,30 +197,37 @@ namespace MazeSolver
                         queue.Enqueue(neighbor);
                     }
                 }
-
+                await Task.Delay(500);
+                this.rectangles[node.Ordinat][node.Absis].Fill = Brushes.Aqua;
             }
         }
 
-        public void DFS(Node node, HashSet<Node> visited, HashSet<Node> visitedT)
+        public async Task DFS(Node node, HashSet<Node> visited, HashSet<Node> visitedT, int x, int y)
         {
             if (visitedT.Count == TreasureCount)
             {
                 return;
             }
+            if (this.DfsPath.Length > 0)
+            this.dfsPath += " - ";
             visited.Add(node);
-            this.dfsPath += (node.Ordinat.ToString() + node.Absis.ToString() + " ");
+            this.dfsPath += ("(" + node.Ordinat.ToString() + "," + node.Absis.ToString() + ")");
             if (node.Treasure && !visitedT.Contains(node))
             {
                 visitedT.Add(node);
             }
 
+            rectangles[node.Ordinat][node.Absis].Fill = Brushes.Blue;
+            await Task.Delay(500);
+            rectangles[node.Ordinat][node.Absis].Fill = Brushes.Aqua;
             foreach (Node neighbor in node.Neighbors)
             {
                 if (!visited.Contains(neighbor))
                 {
-                    DFS(neighbor, visited, visitedT);
+                    await DFS(neighbor, visited, visitedT, node.Absis, node.Ordinat);
                 }
             }
         }
+        
     }
 }

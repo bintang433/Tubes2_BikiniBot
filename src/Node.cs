@@ -92,5 +92,29 @@ namespace MazeSolver
         {
             return (Math.Abs(this.Absis - node.Absis) == 1 && Math.Abs(this.Ordinat - node.Ordinat) == 0) || (Math.Abs(this.Absis - node.Absis) == 0 && Math.Abs(this.Ordinat - node.Ordinat) == 1);
         }
+
+        public string move(int x, int y)
+        {
+            if (x-this.Absis==1)
+            {
+                return "L";
+            }
+            else if (x - this.Absis == -1)
+            {
+                return "R";
+            }
+            else if (y - this.Ordinat == 1)
+            {
+                return "U";
+            }
+            else if (y - this.Ordinat == -1)
+            {
+                return "D";
+            }
+            else
+            {
+                return "";
+            }
+        }
     }
 }
