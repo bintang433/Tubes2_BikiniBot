@@ -137,7 +137,6 @@ namespace MazeSolver
                             text.Height = height;
                             text.FontSize = width/8+10;
                             text.Background = Brushes.Transparent;
-                            text.Style = (Style)FindResource("OutlinedTextBox");
                             Panel.SetZIndex(text, 1);
                             map.Children.Add(text);
                             Canvas.SetTop(text, top);
