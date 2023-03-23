@@ -9,7 +9,26 @@
         WindowStyle="None"
         WindowState="Maximized"
         d:DesignWidth="868.031">
-
+    <Window.Resources>
+        <Style x:Key="OutlinedTextBox" TargetType="{x:Type TextBox}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBox}">
+                        <Grid>
+                            <Border x:Name="border" BorderThickness="0" Background="{TemplateBinding Background}" />
+                            <Border x:Name="border2" BorderThickness="2" BorderBrush="Black" Background="Transparent" />
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="10,0,0,0" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border2" Property="BorderBrush" Value="Red" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
     <Grid>
         <Button Name="SelectFile" Content="Open File" HorizontalAlignment="Left" Height="22" Margin="24,126,0,0" VerticalAlignment="Top" Width="123" Click="SelectFile_Click"/>
         <TextBox Name="FileName" HorizontalAlignment="Left" Height="23" Margin="24,69,0,0" TextWrapping="NoWrap" Text="Masukkan file .." VerticalAlignment="Top" Width="290" TextChanged="TextBox_TextChanged" />

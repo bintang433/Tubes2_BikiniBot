@@ -10,11 +10,13 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml.Linq;
 using static System.Net.Mime.MediaTypeNames;
+using Color = System.Drawing.Color;
 using Rectangle = System.Windows.Shapes.Rectangle;
 
 namespace MazeSolver
@@ -63,6 +65,12 @@ namespace MazeSolver
             if (openFileDialog.ShowDialog() == true)
             {
                 // get the selected file path
+                maze.Rectangles.Clear();
+                maze.Peta.Clear();
+                maze.Grid.Clear();
+                map.Children.Clear();
+                maze.TreasureCount = 0;
+
                 string filePath = openFileDialog.FileName;
                 fileSelected = true;
                 FileName.Text = filePath;
@@ -89,7 +97,9 @@ namespace MazeSolver
                             rect.Fill = Brushes.Black;
                         }
                         else if (maze.Peta[i][j] != "X" && maze.Peta[i][j] == "R" && maze.Peta[i][j] == "T" && maze.Peta[i][j] == "K")
-                        {   
+                        {
+                            maze.Rectangles.Clear();
+                            map.Children.Clear();
                             FileNotSelected.Text = "Format file salah!";
                             FileNotSelected.Foreground = Brushes.Red;
                             break;
@@ -126,6 +136,7 @@ namespace MazeSolver
                             text.Height = height;
                             text.FontSize = width/8+10;
                             text.Background = Brushes.Transparent;
+                            text.Style = (Style)FindResource("OutlinedTextBox");
                             Panel.SetZIndex(text, 1);
                             map.Children.Add(text);
                             Canvas.SetTop(text, top);
@@ -164,15 +175,20 @@ namespace MazeSolver
                 {
                     MethodNotSelected.Text = "";
                     maze.BFS();
+                    maze.visualizeBFS();
                     FileName.Text = maze.BfsPath;
                     // do bfs
                 }
                 else if (dfs.IsChecked == true)
                 {
                     MethodNotSelected.Text = "";
+                    maze.DfsPath = "";
                     HashSet<Node> visited = new HashSet<Node>();
                     HashSet<Node> visitedT = new HashSet<Node>();
                     maze.DFS(maze.StartNode, visited, visitedT, maze.StartNode.Absis, maze.StartNode.Ordinat);
+                    visited.Clear();
+                    visitedT.Clear();
+                    maze.visualizeDFS(maze.StartNode, visited, visitedT, maze.StartNode.Absis, maze.StartNode.Ordinat);
                     FileName.Text = maze.DfsPath;
                     // do dfs
                 }
