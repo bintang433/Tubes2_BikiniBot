@@ -26,8 +26,7 @@ Program ini memiliki GUI sederhana dengan beberapa fitur, yaitu:
 4. Tombol "Search" untuk mengeksekusi pencarian rute solusi dengan algoritma yang dipilih, kemudian menampilkan rute solusi pada visualisasi maze treasure hunt.
 
 ## Cara Menjalankan Program
-1. Pastikan semua requirement telah diinstal
-2. 
+1. Jalankan MazeSolver.exe
 
 
 ## Requirement dan Instalasi
