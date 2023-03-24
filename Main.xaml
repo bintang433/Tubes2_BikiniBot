@@ -85,21 +85,21 @@
                     </ControlTemplate>
                 </Button.Template>
             </Button>
-            <TextBox HorizontalAlignment="Left" BorderThickness="0" FontSize="20" Height="29" Margin="52,339,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="42" Background="Transparent"/>
-            <TextBox HorizontalAlignment="Left" BorderThickness="0" FontSize="20" Height="29" Margin="343,339,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="44" Background="Transparent" RenderTransformOrigin="0.314,0.839"/>
+            <TextBox HorizontalAlignment="Left" BorderThickness="0" FontSize="20" Height="29" Margin="51,169,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="42" Background="Transparent"/>
+            <TextBox HorizontalAlignment="Left" BorderThickness="0" FontSize="20" Height="29" Margin="263,171,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="44" Background="Transparent" RenderTransformOrigin="0.314,0.839"/>
         </Grid>
         <Canvas Name ="map" Margin="360,72,48,49" Height="NaN" Width="NaN"/>
         <RadioButton Name="dfs" HorizontalAlignment="Left" Height="19" Margin="135,225,0,0" VerticalAlignment="Top" Width="73"/>
         <RadioButton Name="bfs" HorizontalAlignment="Left" Height="18" VerticalAlignment="Top" Width="84" Margin="135,246,0,0"/>
-        <TextBox Name="FileName" HorizontalAlignment="Left" Height="23" Margin="56,132,0,0" TextWrapping="NoWrap" Text="Masukkan file .." VerticalAlignment="Top" Width="290" TextChanged="TextBox_TextChanged" />
+        <TextBox Name="FileName" Foreground="DarkBlue" HorizontalAlignment="Left" Height="23" Margin="120,134,0,0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" Width="290" TextChanged="TextBox_TextChanged" Background="Transparent" BorderThickness="0" Cursor="Arrow"/>
         <TextBox Name="FileNotSelected" HorizontalAlignment="Left" Margin="60,157,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" BorderThickness="0" Background="Transparent"/>
-        <TextBox Name="MethodNotSelected" HorizontalAlignment="Left" Margin="132,287,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="66" BorderThickness="0" Height="10" Background="Transparent"/>
-        <Slider Name="Delay" HorizontalAlignment="Left" Margin="81,329,0,0" VerticalAlignment="Top" Width="252" Height="28" Minimum="0" Maximum="1000"/>
+        <TextBox Name="MethodNotSelected"  HorizontalAlignment="Left" Margin="132,287,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="66" BorderThickness="0" Height="10" Background="Transparent"/>
+        <Slider Name="Delay" HorizontalAlignment="Left" Margin="73,159,0,0" VerticalAlignment="Top" Width="181" Height="14" Minimum="0" Maximum="1000"/>
         <CheckBox  Name="tsp" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Width="20" Margin="135,267,0,0"/>
-        <TextBox Name="Route" HorizontalAlignment="Left" Height="20" Margin="60,409,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="273" Background="Transparent" BorderThickness="0"/>
-        <TextBox Name="NodeCountText" TextAlignment="Center" HorizontalAlignment="Left" Height="20" Margin="128,459,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="74" Background="Transparent" BorderThickness="0"/>
-        <TextBox Name="StepCountText" TextAlignment="Center" HorizontalAlignment="Left" Height="20" Margin="128,514,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="74" Background="Transparent" BorderThickness="0"/>
-        <TextBox Name="RunTime" TextAlignment="Center" HorizontalAlignment="Left" Height="25" Margin="128,566,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="86" Background="Transparent" BorderThickness="0"/>
+        <TextBox Name="Route" Foreground="DarkBlue" HorizontalAlignment="Left" Height="20" Margin="60,409,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="273" Background="Transparent" BorderThickness="0" Cursor="Arrow"/>
+        <TextBox Name="NodeCountText" Foreground="DarkBlue" TextAlignment="Center" HorizontalAlignment="Left" Height="20" Margin="128,459,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="74" Background="Transparent" BorderThickness="0" Cursor="Arrow"/>
+        <TextBox Name="StepCountText" Foreground="DarkBlue" TextAlignment="Center" HorizontalAlignment="Left" Height="20" Margin="128,514,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="74" Background="Transparent" BorderThickness="0" Cursor="Arrow"/>
+        <TextBox Name="RunTime" Foreground="DarkBlue" TextAlignment="Center" HorizontalAlignment="Left" Height="25" Margin="128,566,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="86" Background="Transparent" BorderThickness="0" Cursor="Arrow"/>
 
 
 
