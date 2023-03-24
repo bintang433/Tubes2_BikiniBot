@@ -1,3 +1,4 @@
+
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -13,8 +14,12 @@ using System.Windows.Threading;
 using System.Diagnostics;
 
 namespace MazeSolver
+﻿class Maze
 {
-    internal class Maze
+    private char[,] grid;
+    private int startX, startY, treasureCount;
+
+    public Maze(string filename)
     {
         private int width;
         private int height;
@@ -280,6 +285,7 @@ namespace MazeSolver
             }
             this.bfsDone = true;
         }
+    }
 
         public void DFS(Node node, HashSet<Node> visited, HashSet<Node> visitedT, int x, int y)
         {
@@ -327,8 +333,6 @@ namespace MazeSolver
                     await visualizeDFS(neighbor, visited, visitedT, node.Absis, node.Ordinat);
                 }
             }
-            this.dfsDone = true;
         }
-        
     }
 }

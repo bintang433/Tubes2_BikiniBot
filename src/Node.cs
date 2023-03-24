@@ -1,3 +1,4 @@
+
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Media.Animation;
 using System.Xml.Linq;
 
-namespace MazeSolver
+class Node
 {
     public class Node
     {
