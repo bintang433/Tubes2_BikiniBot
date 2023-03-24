@@ -176,24 +176,24 @@ namespace MazeSolver
                     MethodNotSelected.Text = "";
                     maze.BFS();
                     maze.visualizeBFS();
-                    FileName.Text = maze.BfsPath;
+                    FileName.Text = maze.Path;
                     // do bfs
                 }
                 else if (dfs.IsChecked == true)
                 {
                     Stopwatch stopwatch = new Stopwatch();
                     MethodNotSelected.Text = "";
-                    maze.DfsPath = "";
+                    maze.Path = "";
                     HashSet<Node> visited = new HashSet<Node>();
                     HashSet<Node> visitedT = new HashSet<Node>();
                     stopwatch.Start();
                     maze.DFS(maze.StartNode, visited, visitedT, maze.StartNode.Absis, maze.StartNode.Ordinat);
                     stopwatch.Stop();
-                    maze.DfsRuntime = stopwatch.Elapsed.TotalMilliseconds;
+                    maze.RunTime = stopwatch.Elapsed.TotalMilliseconds;
                     visited.Clear();
                     visitedT.Clear();
                     maze.visualizeDFS(maze.StartNode, visited, visitedT, maze.StartNode.Absis, maze.StartNode.Ordinat);
-                    FileName.Text = maze.DfsPath;
+                    FileName.Text = maze.Path;
                     // do dfs
                 }
                 else

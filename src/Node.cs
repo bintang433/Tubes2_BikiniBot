@@ -91,7 +91,7 @@ namespace MazeSolver
 
         public bool isNeighbor(Node node)
         {
-            return (Math.Abs(this.Absis - node.Absis) == 1 && Math.Abs(this.Ordinat - node.Ordinat) == 0) || (Math.Abs(this.Absis - node.Absis) == 0 && Math.Abs(this.Ordinat - node.Ordinat) == 1);
+            return (Math.Abs(this.Absis - node.Absis) + Math.Abs(this.Ordinat - node.Ordinat) == 1);
         }
 
         public string move(int x, int y)

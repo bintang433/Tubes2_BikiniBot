@@ -17,16 +17,14 @@ namespace MazeSolver {
     ﻿class Maze
     {
 
+        private Node startNode;
+        private int treasureCount = 0;
         private int width;
         private int height;
-        private Node startNode;
-        private string bfsPath = "";
-        private string dfsPath = "";
-        private int treasureCount = 0;
-        private bool dfsDone = false;
-        private bool bfsDone = false;
-        private double dfsRuntime;
-        private double bfsRuntime;
+        private double runTime;
+        private string path = "";
+
+        private List<Node> steps;
 
         private List<List<string>> peta;
         private List<List<Node>> grid;
@@ -37,6 +35,7 @@ namespace MazeSolver {
             this.rectangles = new List<List<Rectangle>>();
             this.grid = new List<List<Node>>();
             this.peta = new List<List<string>>();
+            this.steps = new List<Node> ();
 
         }
         public int Width
@@ -63,16 +62,10 @@ namespace MazeSolver {
             get { return grid; }
         }
 
-        public string BfsPath
+        public string Path
         {
-            get { return bfsPath; }
-            set { bfsPath = value; }
-        }
-
-        public string DfsPath
-        {
-            get { return dfsPath; }
-            set { dfsPath = value; }
+            get { return path; }
+            set { path = value; }
         }
 
         public int TreasureCount
@@ -85,23 +78,10 @@ namespace MazeSolver {
             get { return startNode; }
         }
 
-        public bool DfsDone
-        {
-            get { return dfsDone; }
-
-        }
-        public bool BfsDone
-        {
-            get { return bfsDone; }
-        }
-        public double DfsRuntime
-        {
-            get { return dfsRuntime; }
-            set { dfsRuntime = value; }
-        }
-        public double BfsRuntime
+        public double RunTime
         { 
-            get { return bfsRuntime;}
+            get { return runTime;}
+            set { runTime = value; }
         }
         public void createMap(String filename)
         {
@@ -223,13 +203,15 @@ namespace MazeSolver {
 
             queue.Enqueue(this.startNode);
             visited.Add(this.startNode);
+            this.steps.Add(this.startNode);
             while (queue.Count > 0 && visitedT.Count < this.TreasureCount)
             {
                 Node node = queue.Dequeue();
                 visited.Add(node);
-                if (this.bfsPath.Length > 0)
-                    this.bfsPath += " - ";
-                this.bfsPath += ("(" + node.Ordinat.ToString() + "," + node.Absis.ToString() + ")");
+                this.steps.Add(node);
+                if (this.Path.Length > 0)
+                    this.Path += " - ";
+                this.Path += ("(" + node.Ordinat.ToString() + "," + node.Absis.ToString() + ")");
 
                 if (node.Treasure && !visitedT.Contains(node))
                 {
@@ -242,42 +224,28 @@ namespace MazeSolver {
                         queue.Enqueue(neighbor);
                     }
                 }
+                List<Node> tempPath = this.straightenPath(this.steps);
+                while (!queue.Peek().isNeighbor(tempPath[tempPath.Count - 1]) && visitedT.Count < this.TreasureCount)
+                {
+                    tempPath.RemoveAt(tempPath.Count-1);
+                    this.steps.Add(tempPath[tempPath.Count - 1]);
+                    this.Path += " - ";
+                    this.Path += ("(" + tempPath[tempPath.Count - 1].Ordinat.ToString() + "," + tempPath[tempPath.Count - 1].Absis.ToString() + ")");
+                }
             }
-
             stopwatch.Stop();
-            this.bfsRuntime = stopwatch.Elapsed.TotalMilliseconds;
+            this.runTime = stopwatch.Elapsed.TotalMilliseconds;
         }
 
         public async void visualizeBFS()
         {
-
-            Queue<Node> queue = new Queue<Node>();
-            HashSet<Node> visited = new HashSet<Node>();
-            HashSet<Node> visitedT = new HashSet<Node>();
-
-            queue.Enqueue(this.startNode);
-            visited.Add(this.startNode);
-            while (queue.Count > 0 && visitedT.Count < this.TreasureCount)
+            foreach (Node node in this.steps)
             {
-                Node node = queue.Dequeue();
-                visited.Add(node);
                 this.rectangles[node.Ordinat][node.Absis].Fill = Brushes.Blue;
-
-                if (node.Treasure && !visitedT.Contains(node))
-                {
-                    visitedT.Add(node);
-                }
-                foreach (Node neighbor in node.Neighbors)
-                {
-                    if (!visited.Contains(neighbor))
-                    {
-                        queue.Enqueue(neighbor);
-                    }
-                }
-                await Task.Delay(500);
+                await Task.Delay(800);
                 this.rectangles[node.Ordinat][node.Absis].Fill = Brushes.Aqua;
             }
-            this.bfsDone = true;
+            
         }
 
         public void DFS(Node node, HashSet<Node> visited, HashSet<Node> visitedT, int x, int y)
@@ -287,10 +255,10 @@ namespace MazeSolver {
             {
                 return;
             }
-            if (this.DfsPath.Length > 0)
-                this.dfsPath += " - ";
+            if (this.Path.Length > 0)
+                this.Path += " - ";
             visited.Add(node);
-            this.dfsPath += ("(" + node.Ordinat.ToString() + "," + node.Absis.ToString() + ")");
+            this.Path += ("(" + node.Ordinat.ToString() + "," + node.Absis.ToString() + ")");
             if (node.Treasure && !visitedT.Contains(node))
             {
                 visitedT.Add(node);
@@ -326,6 +294,30 @@ namespace MazeSolver {
                     await visualizeDFS(neighbor, visited, visitedT, node.Absis, node.Ordinat);
                 }
             }
+        }
+        public List<Node> straightenPath(List<Node> nodes)
+        {
+            List<Node> straightPath = new List<Node>(nodes);
+            HashSet<Node> uniqueElements = new HashSet<Node>();
+            for (int i = nodes.Count - 1; i >= 0; i--)
+            {
+                Node currentElement = nodes[i];
+                if (uniqueElements.Contains(currentElement))
+                {
+                    int j = i + 1;
+                    while (j < nodes.Count && nodes[j] != currentElement)
+                    {
+                        uniqueElements.Remove(nodes[j]);
+                        nodes.RemoveAt(j);
+                    }
+                    nodes.RemoveAt(j);
+                }
+                else
+                {
+                    uniqueElements.Add(currentElement);
+                }
+            }
+            return straightPath;
         }
 
     }
