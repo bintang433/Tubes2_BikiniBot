@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Media.Animation;
 using System.Xml.Linq;
 
-class Node
+namespace MazeSolver
 {
     public class Node
     {

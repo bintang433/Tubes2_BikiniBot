@@ -13,14 +13,10 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using System.Diagnostics;
 
-namespace MazeSolver
-﻿class Maze
-{
-    private char[,] grid;
-    private int startX, startY, treasureCount;
-
-    public Maze(string filename)
+namespace MazeSolver { 
+    ﻿class Maze
     {
+
         private int width;
         private int height;
         private Node startNode;
@@ -31,8 +27,6 @@ namespace MazeSolver
         private bool bfsDone = false;
         private double dfsRuntime;
         private double bfsRuntime;
-
-        private readonly ManualResetEventSlim pauseEvent = new ManualResetEventSlim(false);
 
         private List<List<string>> peta;
         private List<List<Node>> grid;
@@ -285,7 +279,6 @@ namespace MazeSolver
             }
             this.bfsDone = true;
         }
-    }
 
         public void DFS(Node node, HashSet<Node> visited, HashSet<Node> visitedT, int x, int y)
         {
@@ -334,5 +327,6 @@ namespace MazeSolver
                 }
             }
         }
+
     }
 }
