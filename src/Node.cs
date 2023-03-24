@@ -1,33 +1,121 @@
-﻿using System.Collections.Generic;
+
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Media.Animation;
+using System.Xml.Linq;
 
 class Node
 {
-    public int X { get; set; }
-    public int Y { get; set; }
-    public int Steps { get; set; }
-    public Node Parent { get; set; }
-    public List<Node> Neighbors { get; }
-
-    public bool Visited { get; set; }
-
-    public Node(int x, int y, int steps = 0, Node parent = null!)
+    public class Node
     {
-        X = x;
-        Y = y;
-        Steps = steps;
-        Parent = parent;
-        Neighbors = new List<Node>();
-        Visited = false;
-    }
-
-    public void AddNeighbor(Node neighbor)
-    {
-        if (neighbor == null)
+        List<Node> neighbors;
+        int absis;
+        int ordinat;
+        bool treasure;
+        bool mrCrab;
+        public Node(bool isTreasure, bool isMrCrab, int absis, int ordinat)
         {
-            return;
+            neighbors = new List<Node>();
+            treasure = isTreasure;
+            mrCrab = isMrCrab;
+            this.absis = absis;
+            this.ordinat = ordinat;
+        }
+        public bool Treasure
+        {
+            get
+            {
+                return treasure;
+            }
+            set
+            {
+                treasure = value;
+            }
+        }
+        public bool MrCrab
+        {
+            get
+            {
+                return mrCrab;
+            }
+            set
+            {
+                mrCrab = value;
+            }
+        }
+        public List<Node> Neighbors
+        {
+            get
+            {
+                return neighbors;
+            }
+        }
+        public int Absis
+        {
+            get
+            {
+                return absis;
+
+            }
+            set
+            {
+                absis = value;
+            }
+        }
+        public int Ordinat
+        {
+            get
+            {
+                return ordinat;
+
+            }
+            set
+            {
+                ordinat = value;
+            }
+        }
+        public void addNeighbor(Node newNeighbor)
+        {
+            if (!neighbors.Contains(newNeighbor, new NodeComparer()))
+            {
+                neighbors.Add(newNeighbor);
+                newNeighbor.addNeighbor(this);
+            }
         }
 
-        Neighbors.Add(neighbor);
-        neighbor.Neighbors.Add(this);
+
+
+        public bool isNeighbor(Node node)
+        {
+            return (Math.Abs(this.Absis - node.Absis) == 1 && Math.Abs(this.Ordinat - node.Ordinat) == 0) || (Math.Abs(this.Absis - node.Absis) == 0 && Math.Abs(this.Ordinat - node.Ordinat) == 1);
+        }
+
+        public string move(int x, int y)
+        {
+            if (x-this.Absis==1)
+            {
+                return "L";
+            }
+            else if (x - this.Absis == -1)
+            {
+                return "R";
+            }
+            else if (y - this.Ordinat == 1)
+            {
+                return "U";
+            }
+            else if (y - this.Ordinat == -1)
+            {
+                return "D";
+            }
+            else
+            {
+                return "";
+            }
+        }
     }
 }

@@ -1,3 +1,19 @@
+
+﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Windows.Shapes;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Runtime.CompilerServices;
+using System.Windows.Media;
+using System.Windows.Threading;
+using System.Diagnostics;
+
+namespace MazeSolver
 ﻿class Maze
 {
     private char[,] grid;
@@ -5,99 +21,318 @@
 
     public Maze(string filename)
     {
-        using (StreamReader reader = new StreamReader(filename))
+        private int width;
+        private int height;
+        private Node startNode;
+        private string bfsPath = "";
+        private string dfsPath = "";
+        private int treasureCount = 0;
+        private bool dfsDone = false;
+        private bool bfsDone = false;
+        private double dfsRuntime;
+        private double bfsRuntime;
+
+        private readonly ManualResetEventSlim pauseEvent = new ManualResetEventSlim(false);
+
+        private List<List<string>> peta;
+        private List<List<Node>> grid;
+        private List<List<Rectangle>> rectangles;
+
+        public Maze()
         {
-            string? line = reader.ReadLine();
+            this.rectangles = new List<List<Rectangle>>();
+            this.grid = new List<List<Node>>();
+            this.peta = new List<List<string>>();
 
-            // Validasi format file
-            if (line == null)
+        }
+        public int Width
+        {
+            get { return width; }
+            set { width = value; }
+        }
+        public int Height
+        {
+            get { return height; }
+            set { height = value; }
+        }
+        public List<List<String>> Peta
+        {
+            get { return peta; }
+        }
+        public List<List<Rectangle>> Rectangles
+        {
+            get { return rectangles; }
+        }
+
+        public List<List<Node>> Grid
+        {
+            get { return grid; }
+        }
+
+        public string BfsPath
+        {
+            get { return bfsPath; }
+            set { bfsPath = value; }
+        }
+
+        public string DfsPath
+        {
+            get { return dfsPath; }
+            set { dfsPath = value; }
+        }
+
+        public int TreasureCount
+        {
+            get { return treasureCount; }
+            set { treasureCount = value; }
+        }
+        public Node StartNode
+        {
+            get { return startNode; }
+        }
+
+        public bool DfsDone
+        {
+            get { return dfsDone; }
+
+        }
+        public bool BfsDone
+        {
+            get { return bfsDone; }
+        }
+        public double DfsRuntime
+        {
+            get { return dfsRuntime; }
+            set { dfsRuntime = value; }
+        }
+        public double BfsRuntime
+        { 
+            get { return bfsRuntime;}
+        }
+        public void createMap(String filename)
+        {
+            String filePath = filename;
+            this.peta.Clear();
+            using (StreamReader reader = new StreamReader(filePath))
             {
-                throw new FormatException("Invalid file format");
-            }
-
-            int width = line.Split(' ').Length;
-            int height = 1;
-
-            while (!reader.EndOfStream)
-            {
-                line = reader.ReadLine();
-                height++;
-            }
-
-            grid = new char[height, width];
-            treasureCount = 0;
-
-            reader.BaseStream.Seek(0, SeekOrigin.Begin);
-
-            for (int row = 0; row < height; row++)
-            {
-                line = reader.ReadLine();
-
-                // Validasi panjang baris
-                if (line == null || line.Split(' ').Length != width)
+                int row = 0;
+                this.grid.Add(new List<Node>());
+                string line = reader.ReadLine(); // Read the first line of the file
+                this.peta.Add(new List<String>(line.Split(' '))); // Add the first line to the list of lists
+                for (int col = 0; col < this.peta[row].Count; col++)
                 {
-                    throw new FormatException("Invalid maze row length");
+                    if (this.peta[row][col] != "X")
+                    {
+                        bool isTreasure = false;
+                        bool isMrCrab = false;
+                        if (this.peta[row][col] == "K")
+                        {
+                            isMrCrab = true;
+                        }
+                        if (this.peta[row][col] == "T")
+                        {
+                            isTreasure = true;
+                            this.TreasureCount++;
+                        }
+                        Node newNode = new Node(isTreasure, isMrCrab, col, row);
+                        if (isMrCrab)
+                        {
+                            this.startNode = newNode;
+                        }
+                        this.grid[row].Add(newNode);
+                    }
                 }
-
-                string[] parts = line.Split(' ');
-
-                for (int col = 0; col < width; col++)
+                row++;
+                while ((line = reader.ReadLine()) != null)
                 {
-                    // Validasi nilai array tidak null atau out of range
-                    if (parts[col] == null || parts[col].Length == 0)
+                    this.grid.Add(new List<Node>());
+                    this.peta.Add(new List<String>(line.Split(' '))); // Add each subsequent line to the list of lists
+                    for (int col = 0; col < this.peta[row].Count; col++)
                     {
-                        throw new FormatException("Invalid maze content");
+                        if (this.peta[row][col] != "X")
+                        {
+                            bool isTreasure = false;
+                            bool isMrCrab = false;
+                            if (this.peta[row][col] == "K")
+                            {
+                                isMrCrab = true;
+                            }
+                            if (this.peta[row][col] == "T")
+                            {
+                                isTreasure = true;
+                                this.TreasureCount++;
+                            }
+                            Node newNode = new Node(isTreasure, isMrCrab, col, row);
+                            if (isMrCrab)
+                            {
+                                this.startNode = newNode;
+                            }
+                            this.grid[row].Add(newNode);
+                        }
                     }
 
-                    grid[row, col] = parts[col][0];
+                    row++;
+                }
+                if (this.Peta.Count > 0)
+                {
+                    this.Width = this.Peta[0].Count;
+                    this.Height = this.Peta.Count;
+                }
+            }
+        }
 
-                    if (parts[col][0] == 'K')
+        public void connectNode()
+        {
+            for (int i = 0; i < this.grid.Count; i++)
+            {
+                for (int j = 0; j < this.grid[i].Count; j++)
+                {
+                    if (j != this.grid[i].Count - 1)
                     {
-                        startX = col;
-                        startY = row;
+                        if (this.grid[i][j].isNeighbor(this.grid[i][j + 1]))
+                        {
+                            this.grid[i][j].addNeighbor(this.grid[i][j + 1]);
+                        }
                     }
-                    else if (parts[col][0] == 'T')
+                    if (i != (this.grid.Count - 1))
                     {
-                        treasureCount++;
+                        for (int k = 0; k < this.grid[i+1].Count; k++)
+                        {
+                            if (this.grid[i][j].isNeighbor(this.grid[i + 1][k]))
+                            {
+                                this.grid[i][j].addNeighbor(this.grid[i + 1][k]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public int nodeCount()
+        {
+            int count = 0;
+            foreach(List<Node> nodes in this.grid)
+            {
+                count += nodes.Count;
+            }
+            return count;
+        }
+
+        public void BFS()
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            Queue<Node> queue = new Queue<Node>();
+            HashSet<Node> visited = new HashSet<Node>();
+            HashSet<Node> visitedT = new HashSet<Node>();
+
+            stopwatch.Start();
+
+            queue.Enqueue(this.startNode);
+            visited.Add(this.startNode);
+            while (queue.Count > 0 && visitedT.Count < this.TreasureCount)
+            {
+                Node node = queue.Dequeue();
+                visited.Add(node);
+                if (this.bfsPath.Length > 0)
+                    this.bfsPath += " - ";
+                this.bfsPath += ("(" + node.Ordinat.ToString() + "," + node.Absis.ToString() + ")");
+
+                if (node.Treasure && !visitedT.Contains(node))
+                {
+                    visitedT.Add(node);
+                }
+                foreach (Node neighbor in node.Neighbors)
+                {
+                    if (!visited.Contains(neighbor))
+                    {
+                        queue.Enqueue(neighbor);
                     }
                 }
             }
 
-            // Validasi ada atau tidaknya Krusty Krab dan harta karun
-            if (startX == -1 || treasureCount == 0)
+            stopwatch.Stop();
+            this.bfsRuntime = stopwatch.Elapsed.TotalMilliseconds;
+        }
+
+        public async void visualizeBFS()
+        {
+
+            Queue<Node> queue = new Queue<Node>();
+            HashSet<Node> visited = new HashSet<Node>();
+            HashSet<Node> visitedT = new HashSet<Node>();
+
+            queue.Enqueue(this.startNode);
+            visited.Add(this.startNode);
+            while (queue.Count > 0 && visitedT.Count < this.TreasureCount)
             {
-                throw new FormatException("Invalid maze content");
+                Node node = queue.Dequeue();
+                visited.Add(node);
+                this.rectangles[node.Ordinat][node.Absis].Fill = Brushes.Blue;
+
+                if (node.Treasure && !visitedT.Contains(node))
+                {
+                    visitedT.Add(node);
+                }
+                foreach (Node neighbor in node.Neighbors)
+                {
+                    if (!visited.Contains(neighbor))
+                    {
+                        queue.Enqueue(neighbor);
+                    }
+                }
+                await Task.Delay(500);
+                this.rectangles[node.Ordinat][node.Absis].Fill = Brushes.Aqua;
             }
+            this.bfsDone = true;
         }
     }
 
-    public bool IsAccessible(int x, int y)
-    {
-        if (x < 0 || x >= grid.GetLength(1) || y < 0 || y >= grid.GetLength(0))
+        public void DFS(Node node, HashSet<Node> visited, HashSet<Node> visitedT, int x, int y)
         {
-            return false;
+
+            if (visitedT.Count == TreasureCount)
+            {
+                return;
+            }
+            if (this.DfsPath.Length > 0)
+                this.dfsPath += " - ";
+            visited.Add(node);
+            this.dfsPath += ("(" + node.Ordinat.ToString() + "," + node.Absis.ToString() + ")");
+            if (node.Treasure && !visitedT.Contains(node))
+            {
+                visitedT.Add(node);
+            }
+
+            foreach (Node neighbor in node.Neighbors)
+            {
+                if (!visited.Contains(neighbor))
+                {
+                    DFS(neighbor, visited, visitedT, node.Absis, node.Ordinat);
+                }
+            }
         }
-        return grid[y, x] != 'X';
-    }
-
-    public bool IsTreasure(int x, int y)
-    {
-        return grid[y, x] == 'T';
-    }
-
-    public int StartX => startX;
-
-    public int StartY => startY;
-
-    public int TreasureCount => treasureCount; // Return the number of treasures in the maze
-
-    public char GetNode(int row, int col)
-    { // Return the node at the given row and column
-        return grid[row, col];
-    }
-
-    public Node GetKrustyKrab()
-    { // Return the starting node
-        return new Node(startY, startX);
+        public async Task visualizeDFS(Node node, HashSet<Node> visited, HashSet<Node> visitedT, int x, int y)
+        {
+            
+            if (visitedT.Count == TreasureCount)
+            {
+                return;
+            }
+            visited.Add(node);
+            if (node.Treasure && !visitedT.Contains(node))
+            {
+                visitedT.Add(node);
+            }
+            rectangles[node.Ordinat][node.Absis].Fill = Brushes.Blue;
+            await Task.Delay(500);
+            rectangles[node.Ordinat][node.Absis].Fill = Brushes.Aqua;
+            foreach (Node neighbor in node.Neighbors)
+            {
+                if (!visited.Contains(neighbor))
+                {
+                    await visualizeDFS(neighbor, visited, visitedT, node.Absis, node.Ordinat);
+                }
+            }
+        }
     }
 }
