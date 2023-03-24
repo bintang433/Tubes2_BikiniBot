@@ -21,6 +21,7 @@ namespace MazeSolver {
     {
 
         private Node startNode;
+        private int stepCount = 0;
         private int treasureCount = 0;
         private int width;
         private int height;
@@ -91,6 +92,11 @@ namespace MazeSolver {
         public Node StartNode
         {
             get { return startNode; }
+        }
+        public int StepCount
+        {
+            get { return stepCount; }
+            set { stepCount = value; }
         }
 
         public double RunTime
@@ -215,6 +221,7 @@ namespace MazeSolver {
             HashSet<Node> visitedT = new HashSet<Node>();
             this.steps.Clear();
             this.straightSteps.Clear();
+            this.stepCount = 0;
 
             stopwatch.Start();
 
@@ -224,6 +231,7 @@ namespace MazeSolver {
             this.straightSteps.Add(this.startNode);
             while (queue.Count > 0 && visitedT.Count < this.TreasureCount)
             {
+                stepCount++;
                 Node node = queue.Dequeue();
                 visited.Add(node);
                 this.steps.Add(node);
@@ -258,35 +266,35 @@ namespace MazeSolver {
             this.runTime = stopwatch.Elapsed.TotalMilliseconds;
         }
 
-        public async void visualize()
+        public async void visualize(int delay, bool tsp)
         {
             foreach (Node node in this.steps)
             {
                 this.rectangles[node.Ordinat][node.Absis].Fill = Brushes.Blue;
-                await Task.Delay(100);
+                await Task.Delay(delay);
                 this.rectangles[node.Ordinat][node.Absis].Fill = Brushes.Aqua;
             }
-            backTrackVisualize();
+            if (tsp)
+            backTrackVisualize(delay);
             
         }
-        public async void backTrackVisualize()
+        public async void backTrackVisualize(int delay)
         {
             for (int i = this.straightSteps.Count - 1; i >= 0; i--)
             {
                 this.rectangles[straightSteps[i].Ordinat][straightSteps[i].Absis].Fill = Brushes.Blue;
-                await Task.Delay(100);
+                await Task.Delay(delay);
                 this.rectangles[straightSteps[i].Ordinat][straightSteps[i].Absis].Fill = Brushes.Aqua;
             }
         }
 
-        public void DFS(Node node, HashSet<Node> visited, HashSet<Node> visitedT, int x)
+        public void DFS(Node node, HashSet<Node> visited, HashSet<Node> visitedT)
         {
-
+            stepCount++;
             if (visitedT.Count == TreasureCount)
             {
                 return;
             }
-            x++;
             if (this.Path.Length > 0)
                 this.Path += " - ";
             visited.Add(node);
@@ -309,7 +317,7 @@ namespace MazeSolver {
                         this.Path += " - ";
                         this.Path += ("(" + straightSteps[straightSteps.Count - 1].Ordinat.ToString() + "," + straightSteps[straightSteps.Count - 1].Absis.ToString() + ")");
                     }
-                    DFS(neighbor, visited, visitedT, x);
+                    DFS(neighbor, visited, visitedT);
                 }
             }
         }

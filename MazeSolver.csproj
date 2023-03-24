@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <None Remove="assets\bg.png" />
+    <None Remove="assets\cari.png" />
+    <None Remove="assets\cari1.png" />
     <None Remove="assets\choose.png" />
     <None Remove="assets\choose1.png" />
     <None Remove="assets\search.png" />
@@ -20,6 +22,12 @@
 
   <ItemGroup>
     <Content Include="assets\bg.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\cari.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\cari1.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="assets\choose.png">
@@ -47,6 +55,7 @@
 
   <ItemGroup>
     <Folder Include="config\" />
+    <Folder Include="binn\" />
   </ItemGroup>
 
 </Project>

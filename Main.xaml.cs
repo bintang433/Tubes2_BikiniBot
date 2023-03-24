@@ -34,8 +34,7 @@ namespace MazeSolver
         public MainWindow()
         {
             InitializeComponent();
-
-            
+            this.ResizeMode = ResizeMode.NoResize;
         }
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -64,7 +63,8 @@ namespace MazeSolver
 
                 string filePath = openFileDialog.FileName;
                 fileSelected = true;
-                FileName.Text = filePath;
+                string fileName = System.IO.Path.GetFileName(filePath);
+                FileName.Text = fileName;
                 FileNotSelected.Text = "";
                 bool fileCorrect = true;
                 maze.createMap(filePath);
@@ -107,9 +107,9 @@ namespace MazeSolver
                             text.VerticalContentAlignment = VerticalAlignment.Center;
                             text.Width = width;
                             text.Height = height;
-                            text.FontSize = width/11+10;
+                            text.FontSize = width/11*1.5;
                             text.Background = Brushes.Transparent;
-                            Panel.SetZIndex(text, 1);
+                            Panel.SetZIndex(text, 3);
                             map.Children.Add(text);
                             Canvas.SetTop(text, top);
                             Canvas.SetLeft(text, left);
@@ -125,9 +125,9 @@ namespace MazeSolver
                             text.VerticalContentAlignment = VerticalAlignment.Center;
                             text.Width = width;
                             text.Height = height;
-                            text.FontSize = width/8+10;
+                            text.FontSize = width/8*1.5;
                             text.Background = Brushes.Transparent;
-                            Panel.SetZIndex(text, 1);
+                            Panel.SetZIndex(text, 3);
                             map.Children.Add(text);
                             Canvas.SetTop(text, top);
                             Canvas.SetLeft(text, left);
@@ -135,7 +135,7 @@ namespace MazeSolver
                         rect.Stroke = Brushes.Black;
                         rect.Width = width;
                         rect.Height = height;
-                        Panel.SetZIndex(rect, 0);
+                        Panel.SetZIndex(rect, 2);
                         map.Children.Add(rect);
                         Canvas.SetTop(rect, top);
                         Canvas.SetLeft(rect, left);
@@ -165,26 +165,36 @@ namespace MazeSolver
                 {
                     MethodNotSelected.Text = "";
                     maze.BFS();
-                    maze.visualize();
-                    FileName.Text = maze.Path;
+                    bool TSP = tsp.IsChecked ?? false;
+                    maze.visualize((int)Delay.Value, TSP);
+                    Route.Text = maze.Path;
+                    RunTime.Text = maze.RunTime.ToString() + " ms";
+                    NodeCountText.Text = maze.nodeCount().ToString();
+                    StepCountText.Text = (maze.StepCount-1).ToString();
+
+                    
                     // do bfs
                 }
                 else if (dfs.IsChecked == true)
                 {
+                    maze.StepCount = 0;
                     maze.Steps.Clear();
                     maze.StraightSteps.Clear();
                     Stopwatch stopwatch = new Stopwatch();
                     MethodNotSelected.Text = "";
-                    int x = 1;
                     maze.Path = "";
                     HashSet<Node> visited = new HashSet<Node>();
                     HashSet<Node> visitedT = new HashSet<Node>();
                     stopwatch.Start();
-                    maze.DFS(maze.StartNode, visited, visitedT, x);
+                    maze.DFS(maze.StartNode, visited, visitedT);
                     stopwatch.Stop();
                     maze.RunTime = stopwatch.Elapsed.TotalMilliseconds;
-                    maze.visualize();
-                    FileName.Text = maze.Path;
+                    bool TSP = tsp.IsChecked ?? false;
+                    maze.visualize((int)Delay.Value, TSP);
+                    Route.Text = maze.Path;
+                    RunTime.Text = maze.RunTime.ToString() + " ms";
+                    NodeCountText.Text = maze.nodeCount().ToString();
+                    StepCountText.Text = (maze.StepCount - 1).ToString();
                     // do dfs
                 }
                 else
