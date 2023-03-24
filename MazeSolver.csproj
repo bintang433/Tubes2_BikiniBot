@@ -8,6 +8,44 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="assets\bg.png" />
+    <None Remove="assets\choose.png" />
+    <None Remove="assets\choose1.png" />
+    <None Remove="assets\search.png" />
+    <None Remove="assets\search1.png" />
+    <None Remove="assets\visual.png" />
+    <None Remove="assets\visual1.png" />
+    <None Remove="assets\visual2.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="assets\bg.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\choose.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\choose1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\search.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\search1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\visual.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\visual1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\visual2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="config\" />
   </ItemGroup>
 

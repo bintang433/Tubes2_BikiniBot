@@ -43,16 +43,6 @@ namespace MazeSolver
 
         }
 
-        private void DFS(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void BFS(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void SelectFile_Click(object sender, RoutedEventArgs e)
         {
             // create a new instance of the OpenFileDialog class
@@ -175,24 +165,25 @@ namespace MazeSolver
                 {
                     MethodNotSelected.Text = "";
                     maze.BFS();
-                    maze.visualizeBFS();
+                    maze.visualize();
                     FileName.Text = maze.Path;
                     // do bfs
                 }
                 else if (dfs.IsChecked == true)
                 {
+                    maze.Steps.Clear();
+                    maze.StraightSteps.Clear();
                     Stopwatch stopwatch = new Stopwatch();
                     MethodNotSelected.Text = "";
+                    int x = 1;
                     maze.Path = "";
                     HashSet<Node> visited = new HashSet<Node>();
                     HashSet<Node> visitedT = new HashSet<Node>();
                     stopwatch.Start();
-                    maze.DFS(maze.StartNode, visited, visitedT, maze.StartNode.Absis, maze.StartNode.Ordinat);
+                    maze.DFS(maze.StartNode, visited, visitedT, x);
                     stopwatch.Stop();
                     maze.RunTime = stopwatch.Elapsed.TotalMilliseconds;
-                    visited.Clear();
-                    visitedT.Clear();
-                    maze.visualizeDFS(maze.StartNode, visited, visitedT, maze.StartNode.Absis, maze.StartNode.Ordinat);
+                    maze.visualize();
                     FileName.Text = maze.Path;
                     // do dfs
                 }

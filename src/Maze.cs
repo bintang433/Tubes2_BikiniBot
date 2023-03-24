@@ -12,6 +12,9 @@ using System.Runtime.CompilerServices;
 using System.Windows.Media;
 using System.Windows.Threading;
 using System.Diagnostics;
+using System.Xml.Linq;
+using System.Collections;
+using System.Windows.Controls;
 
 namespace MazeSolver { 
     ﻿class Maze
@@ -25,6 +28,7 @@ namespace MazeSolver {
         private string path = "";
 
         private List<Node> steps;
+        private List<Node> straightSteps;
 
         private List<List<string>> peta;
         private List<List<Node>> grid;
@@ -36,6 +40,7 @@ namespace MazeSolver {
             this.grid = new List<List<Node>>();
             this.peta = new List<List<string>>();
             this.steps = new List<Node> ();
+            this.straightSteps = new List<Node>();
 
         }
         public int Width
@@ -60,6 +65,16 @@ namespace MazeSolver {
         public List<List<Node>> Grid
         {
             get { return grid; }
+        }
+
+        public List<Node> Steps 
+        { 
+            get { return steps; } 
+        }
+
+        public List<Node> StraightSteps 
+        { 
+            get { return straightSteps; } 
         }
 
         public string Path
@@ -198,17 +213,21 @@ namespace MazeSolver {
             Queue<Node> queue = new Queue<Node>();
             HashSet<Node> visited = new HashSet<Node>();
             HashSet<Node> visitedT = new HashSet<Node>();
+            this.steps.Clear();
+            this.straightSteps.Clear();
 
             stopwatch.Start();
 
             queue.Enqueue(this.startNode);
             visited.Add(this.startNode);
             this.steps.Add(this.startNode);
+            this.straightSteps.Add(this.startNode);
             while (queue.Count > 0 && visitedT.Count < this.TreasureCount)
             {
                 Node node = queue.Dequeue();
                 visited.Add(node);
                 this.steps.Add(node);
+                this.straightSteps.Add(node);
                 if (this.Path.Length > 0)
                     this.Path += " - ";
                 this.Path += ("(" + node.Ordinat.ToString() + "," + node.Absis.ToString() + ")");
@@ -224,11 +243,13 @@ namespace MazeSolver {
                         queue.Enqueue(neighbor);
                     }
                 }
-                List<Node> tempPath = this.straightenPath(this.steps);
-                while (!queue.Peek().isNeighbor(tempPath[tempPath.Count - 1]) && visitedT.Count < this.TreasureCount)
+                this.straightSteps = new List<Node>(this.steps);
+                List<Node> tempPath = this.straightenPath(this.straightSteps);
+                while ((!queue.Peek().isNeighbor(tempPath[tempPath.Count - 1])) && visitedT.Count < this.TreasureCount)
                 {
                     tempPath.RemoveAt(tempPath.Count-1);
                     this.steps.Add(tempPath[tempPath.Count - 1]);
+                    this.straightSteps.Add(tempPath[tempPath.Count - 1]);
                     this.Path += " - ";
                     this.Path += ("(" + tempPath[tempPath.Count - 1].Ordinat.ToString() + "," + tempPath[tempPath.Count - 1].Absis.ToString() + ")");
                 }
@@ -237,27 +258,40 @@ namespace MazeSolver {
             this.runTime = stopwatch.Elapsed.TotalMilliseconds;
         }
 
-        public async void visualizeBFS()
+        public async void visualize()
         {
             foreach (Node node in this.steps)
             {
                 this.rectangles[node.Ordinat][node.Absis].Fill = Brushes.Blue;
-                await Task.Delay(800);
+                await Task.Delay(100);
                 this.rectangles[node.Ordinat][node.Absis].Fill = Brushes.Aqua;
             }
+            backTrackVisualize();
             
         }
+        public async void backTrackVisualize()
+        {
+            for (int i = this.straightSteps.Count - 1; i >= 0; i--)
+            {
+                this.rectangles[straightSteps[i].Ordinat][straightSteps[i].Absis].Fill = Brushes.Blue;
+                await Task.Delay(100);
+                this.rectangles[straightSteps[i].Ordinat][straightSteps[i].Absis].Fill = Brushes.Aqua;
+            }
+        }
 
-        public void DFS(Node node, HashSet<Node> visited, HashSet<Node> visitedT, int x, int y)
+        public void DFS(Node node, HashSet<Node> visited, HashSet<Node> visitedT, int x)
         {
 
             if (visitedT.Count == TreasureCount)
             {
                 return;
             }
+            x++;
             if (this.Path.Length > 0)
                 this.Path += " - ";
             visited.Add(node);
+            this.steps.Add(node);
+            this.straightSteps.Add(node);
             this.Path += ("(" + node.Ordinat.ToString() + "," + node.Absis.ToString() + ")");
             if (node.Treasure && !visitedT.Contains(node))
             {
@@ -268,33 +302,18 @@ namespace MazeSolver {
             {
                 if (!visited.Contains(neighbor))
                 {
-                    DFS(neighbor, visited, visitedT, node.Absis, node.Ordinat);
+                    while ((!(neighbor.isNeighbor(straightSteps[straightSteps.Count - 1]))) && visitedT.Count < this.TreasureCount)
+                    {
+                        straightSteps.RemoveAt(straightSteps.Count - 1);
+                        this.steps.Add(straightSteps[straightSteps.Count - 1]);
+                        this.Path += " - ";
+                        this.Path += ("(" + straightSteps[straightSteps.Count - 1].Ordinat.ToString() + "," + straightSteps[straightSteps.Count - 1].Absis.ToString() + ")");
+                    }
+                    DFS(neighbor, visited, visitedT, x);
                 }
             }
         }
-        public async Task visualizeDFS(Node node, HashSet<Node> visited, HashSet<Node> visitedT, int x, int y)
-        {
-            
-            if (visitedT.Count == TreasureCount)
-            {
-                return;
-            }
-            visited.Add(node);
-            if (node.Treasure && !visitedT.Contains(node))
-            {
-                visitedT.Add(node);
-            }
-            rectangles[node.Ordinat][node.Absis].Fill = Brushes.Blue;
-            await Task.Delay(500);
-            rectangles[node.Ordinat][node.Absis].Fill = Brushes.Aqua;
-            foreach (Node neighbor in node.Neighbors)
-            {
-                if (!visited.Contains(neighbor))
-                {
-                    await visualizeDFS(neighbor, visited, visitedT, node.Absis, node.Ordinat);
-                }
-            }
-        }
+       
         public List<Node> straightenPath(List<Node> nodes)
         {
             List<Node> straightPath = new List<Node>(nodes);

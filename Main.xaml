@@ -1,89 +1,25 @@
-﻿<Window x:Class="WpfApp1.MainWindow"
+﻿<Window x:Class="MazeSolver.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WpfApp1"
+        xmlns:local="clr-namespace:MazeSolver"
         mc:Ignorable="d"
-        
-        Title="MainWindow" Height="650" Width="935">
+        Title="Menu"
+        WindowStyle="None"
+        WindowState="Maximized"
+        d:DesignWidth="868.031">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <Grid.Background>
-            <ImageBrush ImageSource="assets/bg.png"/>
-        </Grid.Background>
-        <Grid Margin="0,-16,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-
-            <Button Name="SelectFile"  HorizontalAlignment="Left" Height="20" Margin="219,132,0,0" VerticalAlignment="Top" Width="60" BorderBrush="{x:Null}" Foreground="{x:Null}" RenderTransformOrigin="0.36,0.185">
-                <Button.Style>
-                    <Style TargetType="{x:Type Button}">
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Cursor" Value="Hand"/>
-                                <Setter Property="Content">
-                                    <Setter.Value>
-                                        <Image Source="assets/choose1.png"/>
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="False">
-                                <Setter Property="Cursor" Value="Arrow"/>
-                                <Setter Property="Content">
-                                    <Setter.Value>
-                                        <Image Source="assets/choose.png"/>
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-                <Button.Template>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Border Background="Transparent" BorderThickness="0">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
-
-            <Button Name="Visualize"  HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="60" BorderBrush="{x:Null}" Foreground="{x:Null}" RenderTransformOrigin="0.633,1.017" Margin="221,330,0,0">
-                <Button.Style>
-                    <Style TargetType="{x:Type Button}">
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Cursor" Value="Hand"/>
-                                <Setter Property="Content">
-                                    <Setter.Value>
-                                        <Image Source="assets/visual.png"/>
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="False">
-                                <Setter Property="Cursor" Value="Arrow"/>
-                                <Setter Property="Content">
-                                    <Setter.Value>
-                                        <Image Source="assets/visual1.png"/>
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-                <Button.Template>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Border Background="Transparent" BorderThickness="0">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
-        </Grid>
-
+        <Button Name="SelectFile" Content="Open File" HorizontalAlignment="Left" Height="22" Margin="24,126,0,0" VerticalAlignment="Top" Width="123" Click="SelectFile_Click"/>
+        <TextBox Name="FileName" HorizontalAlignment="Left" Height="23" Margin="24,69,0,0" TextWrapping="NoWrap" Text="Masukkan file .." VerticalAlignment="Top" Width="290" TextChanged="TextBox_TextChanged" />
+        <RadioButton Name="dfs" Content="DFS" HorizontalAlignment="Left" Height="19" Margin="24,171,0,0" VerticalAlignment="Top" Width="73" Checked="DFS"/>
+        <RadioButton Name="bfs" Content="BFS" HorizontalAlignment="Left" Height="17" VerticalAlignment="Top" Width="84" Margin="24,205,0,0" Checked="BFS"/>
+        <Button Name="visualize" Content="viusalize" HorizontalAlignment="Left" Margin="130,309,0,0" VerticalAlignment="Top" Height="54" Width="197" Click="Visualize_Click" FontSize="25"/>
+        <Slider HorizontalAlignment="Left" Margin="24,259,0,0" VerticalAlignment="Top" Width="410" Height="28"/>
+        <TextBox Name="MethodNotSelected" HorizontalAlignment="Left" Margin="24,227,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" BorderThickness="0"/>
+        <TextBox Name="FileNotSelected" HorizontalAlignment="Left" Margin="24,97,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" BorderThickness="0"/>
+        <Rectangle HorizontalAlignment="Stretch" Height="NaN" Margin="470,0,0,0" Stroke="LightBlue" VerticalAlignment="Stretch" Width="NaN" Fill="LightCyan"/>
+        <TextBox HorizontalAlignment="Left" Height="46" Margin="24,10,0,0" TextWrapping="Wrap" Text="Maze Solver" VerticalAlignment="Top" Width="410" FontSize="35" TextAlignment="Center" BorderThickness="0"/>
+        <Canvas Name ="map" Margin="470,0,0,0" Height="NaN" Width="NaN" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
     </Grid>
-
 </Window>
